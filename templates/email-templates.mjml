@@ -1,0 +1,17 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="20px" color="#F45E43" font-family="helvetica">
+          Hello {{name}},
+        </mj-text>
+        <mj-text>
+          We're excited to tell you about our new product: <strong>{{product}}</strong>!
+        </mj-text>
+        <mj-button href="{{ctaUrl}}">
+          Learn More
+        </mj-button>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
