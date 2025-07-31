@@ -14,9 +14,9 @@ const ses = new AWS.SES({
 });
 
 const params = {
-  Source: "noreply@mylamp.in",
+  Source: "support@mylamp.in",
   Destination: {
-    ToAddresses: ["ashutoshkrsinghsm@gmail.com"],
+    ToAddresses: ["jitendrakumarbunkar85@gmail.com"],
   },
   Message: {
     Subject: {
