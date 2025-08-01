@@ -1,72 +1,68 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var client_ses_1 = require("@aws-sdk/client-ses");
-var accessKeyId = process.env.AWS_SES_ACCESS_KEY || "";
-var secretAccessKey = process.env.AWS_SES_SECRET_KEY || "";
-var client = new client_ses_1.SESClient({
-    region: "ap-south-1",
-    credentials: {
-        accessKeyId: accessKeyId,
-        secretAccessKey: secretAccessKey,
-    },
+import AWS from "aws-sdk";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const region = process.env.AWS_REGION;
+const accessKeyId = process.env.AWS_SES_ACCESS_KEY;
+const secretAccessKey = process.env.AWS_SES_SECRET_KEY;
+
+AWS.config.update({ region });
+const ses = new AWS.SES({
+  accessKeyId,
+  secretAccessKey,
 });
-var params = {
-    Source: "noreply@mylamp.in", // Must be a verified email in SES
-    Destination: {
-        ToAddresses: ["ashutoshkrsinghsm@gmail.com"], // recipient
+
+const params = {
+  Source: "noreply@mylamp.in",
+  Destination: {
+    ToAddresses: ["ashutoshkrsinghsm@gmail.com"],
+  },
+  Message: {
+    Subject: {
+      Data: "Your OTP Code to Login",
+      Charset: "UTF-8",
     },
-    Message: {
-        Subject: {
-            Data: "Your OTP Code to Login",
-            Charset: "UTF-8",
-        },
-        Body: {
-            Text: {
-                Charset: "UTF-8",
-                Data: "Dear user,\nYou requested a one-time password (OTP) to log in to your account.\nYour OTP is: 593218\nThis code will expire in 10 minutes. Please do not share this code with anyone.\nIf you did not request this, please ignore this email.\nThanks,\nTeam MyLamp.in",
-            },
-            Html: {
-                Charset: "UTF-8",
-                Data: "<!DOCTYPE html>\n<html>\n  <body>\n    <div>\n      <h2>Login OTP for MyLamp.in</h2>\n      <p>Dear user,</p>\n      <p>Your OTP is: <strong>593218</strong></p>\n      <p>This code will expire in 10 minutes. Please do not share this code with anyone.</p>\n      <p>If you did not request this, please ignore this email.</p>\n      <p>Thanks,<br>Team MyLamp.in</p>\n    </div>\n  </body>\n</html>",
-            },
-        },
+    Body: {
+      Text: {
+        Charset: "UTF-8",
+        Data: `Dear user,
+
+You requested a one-time password (OTP) to log in to your account.
+
+Your OTP is: 593218
+
+This code will expire in 10 minutes. Please do not share this code with anyone.
+
+If you did not request this, please ignore this email.
+
+Thanks,
+Team MyLamp.in`,
+      },
+      Html: {
+        Charset: "UTF-8",
+        Data: `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>OTP Verification</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <h2 style="color: #333;">Login OTP for MyLamp.in</h2>
+      <p>Dear user,</p>
+      <p>You requested a one-time password (OTP) to log in to your account.</p>
+      <p style="font-size: 20px; font-weight: bold; color: #2c3e50; background: #ecf0f1; padding: 10px; display: inline-block; border-radius: 4px;">593218</p>
+      <p>This code will expire in 10 minutes. Please do not share this code with anyone.</p>
+      <p>If you did not request this, please ignore this email.</p>
+      <br>
+      <p>Thanks,<br><strong>Team MyLamp.in</strong></p>
+    </div>
+  </body>
+</html>`,
+      },
     },
+  },
 };
 try {
     console.log("hello");
