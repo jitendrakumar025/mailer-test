@@ -1,6 +1,7 @@
-import AWS from "aws-sdk";
-import dotenv from "dotenv";
-
+const AWS = require("aws-sdk");
+const dotenv = require("dotenv");
+const XLSX = require("xlsx");
+const path = require("path");
 dotenv.config();
 
 const region = process.env.AWS_REGION;
@@ -13,126 +14,117 @@ const ses = new AWS.SES({
   secretAccessKey,
 });
 
-const params = {
-  Source: '"wiZe Team" <no-reply@mail.mylamp.in>',
-  Destination: {
-    ToAddresses: [
-      "jitu.wize@gmail.com",
-      "ashutoshasharsiper@gmail.com",
-      "jitendrakumarbunkar85@gmail.com",
-      "jitendra.bunkar@wize.co.in",
-      "onlineisp2023@gmail.com",
-      "tagsworldarpit@gmail.com",
-    ],
-  },
-  ReplyToAddresses: [],
-  Message: {
-    Subject: {
-      Data: "Standard Template Email testing",
-      Charset: "UTF-8",
+const workbook = XLSX.readFile(path.join(__dirname, "rec2.xlsx"));
+
+const sheetName = workbook.SheetNames[0];
+const sheet = workbook.Sheets[sheetName];
+const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+const sendEmail = async (email, name) => {
+  const params = {
+    Source: "wiZe Team <no-reply@mail.mylamp.in>'",
+    Destination: {
+      ToAddresses: [email],
     },
-    Body: {
-      Html: {
+    Message: {
+      Subject: {
+        Data: "wiZe Pro Access Dev Test Mail for testing purpose only - AI Mock Interviewer | Recommended by the C&A Club, IIT Guwahati 123423",
         Charset: "UTF-8",
-        Data: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns = "http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>wiZe Email Template</title>
-    <style type="text/css">
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #CCCCCC;
-            font-family: sans-serif;
-        }
+      },
+      Body: {
+        Text: {
+          Charset: "UTF-8",
+          Data: `Dear ${name},
 
-        table {
-            border-spacing: 0;
-        }
+Your wiZe Pro access has been activated. You can now access the AI Mock Interviewer and other premium features.
 
-        td {
-            padding: 0;
-        }
+Visit: https://wize.co.in/interviews
 
-        img {
-            border: 0;
-        }
+All the best!
+Team wiZe (myLamp AI)`,
+        },
+        Html: {
+          Charset: "UTF-8",
+          Data: `<!DOCTYPE html>
+<html>
 
-        .wrapper {
-            width: 100%;
-            table-layout: fixed;
-        }
+<body style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2>Your wiZe Pro Access is Now Live!</h2>
+    <p>Dear Student,</p>
+    <p>Your <strong>wiZe Pro</strong> access has been activated! You can now use the <strong>AI Mock
+            Interviewer</strong> along with the wiZe Premium Platform, as recommended by the <strong>Consulting &
+            Analytics Club, IIT Guwahati</strong>.</p>
+    <p><strong>Access Link:</strong> <a href="https://wize.co.in/interviews">Click here</a></p>
+    <p>Pick any interview and give it a shot!</p>
+    <i>
+        (Login → Upload CV → Start Interview → Get Analysis)
 
-        .main {
-            margin: 0 auto;
-            width: 100%;
-            max-width: 600px;
-            border-spacing: 0;
-        }
 
-        p {
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.5;
-            color: #555555;
-            margin: 10px 20px;
-        }
-
-        .outer {
-            max-width: 600px;
-            background-color: #ffffff;
-            border-left: 1px solid #E5ECEE;
-            border-right: 1px solid #E5ECEE;
-        }
-    </style>
-</head>
-<body>
-  <center class="wrapper">
-        <div class="outer" style="background: linear-gradient(135deg, #cdb6fa, #b799d5);">
-            <table class="main" align="center">
-                <tr>
-                    <td>
-                        <img src="https://myimgs.org/storage/images/1183/wizelogo.png" alt="Logo"
-                            style="top: 2px; left: 4px; max-width: 130px;" />
-                    </td>
-                </tr>
-                <tr>
-                <td>
-                {{EMAIL_CONTENT}}
-                </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div style="margin-top: 24px; text-align: center;">
-                            <a href="https://wize.co.in/"
-                                style="display: inline-block; background-color: #7C3AED; color: white; font-weight: 600; padding: 8px 16px; border-radius: 8px; text-decoration: none;">Join
-                                Now!</a>
-                        </div>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td style="padding: 16px; text-align: center; color: #111827;">
-                        <p style="margin-top: 16px;">
-                            <a href="#" style="color: #1D4ED8;">Privacy Policy</a> |
-                            <a href="#" style="color: #1D4ED8;">Contact Support</a> |
-                            <a href="#" style="color: #1D4ED8;">Unsubscribe</a>
-                        </p>
-                        <p style="color: #6B7280;">
-                            IIT Kharagpur (W Bengal) 721302
-                        </p>
-                    </td>
-                </tr>
-            </table>
-            </div>
-            </center>
-            </body>`,
+    </i>
+    <p>All the best!</p>
+    <br>
+    <p>--<br>
+        Thanks and Regards,<br>
+    <div style="display: flex; gap: 8px; ">
+        <img src="https://res.cloudinary.com/dqidphson/image/upload/v1753986808/wize_logo_whitebg_hdi0qn.png" style="width: 100px; height: 100px;">
+        </img>
+        <div style="padding-top: 0.8rem; padding-left: 0.5rem;">
+            <strong>Team</strong><br>
+            wiZe (myLamp AI)<br>
+            Whatsapp: <div>92441 60441</div>
+            <a href="https://www.linkedin.com/company/mylamp-ai/">LinkedIn</a> |
+            <a href="mailto:arpit@mylamp.co.in">Email</a> |
+            <a href="https://wize.co.in/">Website</a></p>
+        </div>
+    </div>
+</body>
+</html>`,
+        },
       },
     },
-  },
+  };
+
+  try {
+    const result = await ses.sendEmail(params).promise();
+    console.log(`✅ Email sent to ${email}: MessageId = ${result.MessageId}`);
+  } catch (err) {
+    console.error(`❌ Failed to send email to ${email}:`, err.message);
+  }
 };
 
-ses.sendEmail(params).promise().then(console.log).catch(console.error);
+const main = async () => {
+  const sentEmails = new Set();
+
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+
+    const nameCell = (row[2] || "").toString().trim();
+    const name = nameCell.split(" ")[0] || "Student";
+
+    const email = (row[3] || "").toString().trim().toLowerCase();
+
+    if (!email.includes("@")) {
+      console.warn(`⚠️ Skipping invalid email at row ${i + 1}`);
+      continue;
+    }
+
+    if (sentEmails.has(email)) {
+      console.log(`⏩ Skipping duplicate: ${email}`);
+      continue;
+    }
+
+    // console.log(`📧 Sending to ${name} <${email}>`);
+
+    await sendEmail(email, name);
+    sentEmails.add(email);
+
+    const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+    await sleep(500); // 0.5 second delay
+  }
+
+  console.log(
+    `✅ Finished sending emails to ${sentEmails.size} unique addresses.`
+  );
+};
+
+main();
