@@ -12,7 +12,10 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.848.0",
     "aws-sdk": "^2.1692.0",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
     "dotenv": "^17.0.1",
+    "express": "^5.1.0",
     "mjml": "^4.15.3",
     "mustache": "^4.2.0",
     "xlsx": "^0.18.5"

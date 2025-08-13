@@ -2,6 +2,17 @@ const AWS = require("aws-sdk");
 const dotenv = require("dotenv");
 const XLSX = require("xlsx");
 const path = require("path");
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const emailRoutes = require("./routes/email");
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+const PORT = process.env.PORT || 5000;
+
 dotenv.config();
 
 const region = process.env.AWS_REGION;
@@ -28,7 +39,7 @@ const sendEmail = async (email, name) => {
     },
     Message: {
       Subject: {
-        Data: "wiZe Pro Access Dev Test Mail for testing purpose only - AI Mock Interviewer | Recommended by the C&A Club, IIT Guwahati 123423",
+        Data: "wiZe Pro Access – AI Mock Interviewer | IIT Kharagpur",
         Charset: "UTF-8",
       },
       Body: {
@@ -50,10 +61,8 @@ Team wiZe (myLamp AI)`,
 
 <body style="font-family: Arial, sans-serif; line-height: 1.6;">
     <h2>Your wiZe Pro Access is Now Live!</h2>
-    <p>Dear Student,</p>
-    <p>Your <strong>wiZe Pro</strong> access has been activated! You can now use the <strong>AI Mock
-            Interviewer</strong> along with the wiZe Premium Platform, as recommended by the <strong>Consulting &
-            Analytics Club, IIT Guwahati</strong>.</p>
+    <p>Dear ${name},</p>
+    <p>Your wiZe Pro access has been activated! You can now use the <strong>AI Mock Interviewer</strong> along with the <strong>wiZe Premium Platform</strong>.</p>
     <p><strong>Access Link:</strong> <a href="https://wize.co.in/interviews">Click here</a></p>
     <p>Pick any interview and give it a shot!</p>
     <i>
@@ -68,7 +77,7 @@ Team wiZe (myLamp AI)`,
     <div style="display: flex; gap: 8px; ">
         <img src="https://res.cloudinary.com/dqidphson/image/upload/v1753986808/wize_logo_whitebg_hdi0qn.png" style="width: 100px; height: 100px;">
         </img>
-        <div style="padding-top: 0.8rem; padding-left: 0.5rem;">
+        <div style="padding-top: 0.5rem; padding-left: 0.5rem;">
             <strong>Team</strong><br>
             wiZe (myLamp AI)<br>
             Whatsapp: <div>92441 60441</div>
@@ -92,39 +101,50 @@ Team wiZe (myLamp AI)`,
   }
 };
 
-const main = async () => {
-  const sentEmails = new Set();
+// const main = async () => {
+//   const sentEmails = new Set();
 
-  for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
+//   for (let i = 1; i < rows.length; i++) {
+//     const row = rows[i];
 
-    const nameCell = (row[2] || "").toString().trim();
-    const name = nameCell.split(" ")[0] || "Student";
+//     const nameCell = (row[2] || "").toString().trim();
+//     const name = nameCell.split(" ")[0] || "Student";
 
-    const email = (row[3] || "").toString().trim().toLowerCase();
+//     const email = (row[3] || "").toString().trim().toLowerCase();
 
-    if (!email.includes("@")) {
-      console.warn(`⚠️ Skipping invalid email at row ${i + 1}`);
-      continue;
-    }
+//     if (!email.includes("@")) {
+//       console.warn(`⚠️ Skipping invalid email at row ${i + 1}`);
+//       continue;
+//     }
 
-    if (sentEmails.has(email)) {
-      console.log(`⏩ Skipping duplicate: ${email}`);
-      continue;
-    }
+//     if (sentEmails.has(email)) {
+//       console.log(`⏩ Skipping duplicate: ${email}`);
+//       continue;
+//     }
 
-    // console.log(`📧 Sending to ${name} <${email}>`);
+//     // console.log(`📧 Sending to ${name} <${email}>`);
 
-    await sendEmail(email, name);
-    sentEmails.add(email);
+//     await sendEmail(email, name);
+//     sentEmails.add(email);
 
-    const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-    await sleep(500); // 0.5 second delay
-  }
+//     const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
-  console.log(
-    `✅ Finished sending emails to ${sentEmails.size} unique addresses.`
-  );
-};
+//     const getRandomDelay = () => {
+//       return Math.floor(Math.random() * 1000) + 1000;
+//     };
 
-main();
+//     await sleep(getRandomDelay());
+//   }
+
+//   console.log(
+//     `✅ Finished sending emails to ${sentEmails.size} unique addresses.`
+//   );
+// };
+
+// main();
+
+app.use("/api", emailRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
